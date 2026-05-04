@@ -11,6 +11,7 @@ interface AyahCardProps {
     juz: number;
     arabic: string;
     translation_en: string;
+    translation_bn: string;
     surahNumber: number;
   };
   surahName: string;
@@ -18,7 +19,13 @@ interface AyahCardProps {
 }
 
 export default function AyahCard({ ayah, surahName, totalAyahs }: AyahCardProps) {
-  const { arabicFontSize, translationFontSize, arabicFont } = useReaderSettings();
+  const {
+    arabicFontSize,
+    translationFontSize,
+    arabicFont,
+    translationLanguage,
+    translator
+  } = useReaderSettings();
   const {
     playAyah,
     isPlaying,
@@ -119,7 +126,7 @@ export default function AyahCard({ ayah, surahName, totalAyahs }: AyahCardProps)
             style={{
               direction: 'rtl',
               fontSize: `${arabicFontSize}px`,
-              fontFamily: arabicFont === "Amiri" ? "var(--font-amiri)" : "serif"
+              fontFamily: arabicFont === "Amiri" ? "var(--font-amiri)" : arabicFont === "Indopak" ? "serif" : "inherit"
             }}
             suppressHydrationWarning
           >
@@ -159,13 +166,15 @@ export default function AyahCard({ ayah, surahName, totalAyahs }: AyahCardProps)
         <div className="space-y-8">
           {/* English Translation */}
           <div className="max-w-4xl">
-            <span className="text-[10px] text-text-secondary/40 font-bold uppercase tracking-[0.15em] block mb-3">SAHEEH INTERNATIONAL</span>
+            <span className="text-[10px] text-text-secondary/40 font-bold uppercase tracking-[0.15em] block mb-3">
+              {translationLanguage === "english" ? translator : "অনুবাদ: হাফেজ মুফতী হাবীবুর রহমান"}
+            </span>
             <p
               className="text-white/90 leading-relaxed font-normal"
               style={{ fontSize: `${translationFontSize}px` }}
               suppressHydrationWarning
             >
-              {ayah.translation_en}
+              {translationLanguage === "english" ? ayah.translation_en : ayah.translation_bn}
             </p>
           </div>
         </div>

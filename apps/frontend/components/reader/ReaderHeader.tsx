@@ -7,18 +7,13 @@ import { useSearchParams } from "next/navigation";
 import { fetchSurahById, Surah } from "@/lib/api";
 import Link from "next/link";
 import Image from "next/image";
+import SettingsSidebar from "./SettingsSidebar";
 
 export default function ReaderHeader() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [activeSurah, setActiveSurah] = useState<Surah | null>(null);
   const searchParams = useSearchParams();
   const surahId = searchParams.get("surah") || "1";
-
-  const {
-    arabicFontSize, setArabicFontSize,
-    translationFontSize, setTranslationFontSize,
-    arabicFont, setArabicFont
-  } = useReaderSettings();
 
   useEffect(() => {
     const getSurahInfo = async () => {
@@ -143,93 +138,11 @@ export default function ReaderHeader() {
         </a>
       </div>
 
-      {/* Settings Panel Modal */}
-      {isSettingsOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-end">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsSettingsOpen(false)} />
-          <div className="relative w-full max-w-sm h-full bg-bg-sidebar border-l border-border-subtle p-8 shadow-2xl animate-in slide-in-from-right duration-300">
-            <div className="flex justify-between items-center mb-10">
-              <h3 className="text-lg font-bold font-serif text-primary-gold">Reader Settings</h3>
-              <button onClick={() => setIsSettingsOpen(false)} className="p-2 hover:bg-white/5 rounded-full">
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <div className="flex justify-between text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  <span>Arabic Font Size</span>
-                  <span className="text-primary-green">{arabicFontSize}px</span>
-                </div>
-                <input
-                  type="range" min="20" max="64" step="2"
-                  value={arabicFontSize}
-                  onChange={(e) => setArabicFontSize(Number(e.target.value))}
-                  className="w-full accent-primary-green bg-bg-content h-1.5 rounded-full appearance-none cursor-pointer"
-                />
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex justify-between text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  <span>Translation Font Size</span>
-                  <span className="text-primary-green">{translationFontSize}px</span>
-                </div>
-                <input
-                  type="range" min="12" max="32" step="1"
-                  value={translationFontSize}
-                  onChange={(e) => setTranslationFontSize(Number(e.target.value))}
-                  className="w-full accent-primary-green bg-bg-content h-1.5 rounded-full appearance-none cursor-pointer"
-                />
-              </div>
-
-              <div className="space-y-4">
-                <label className="text-xs font-medium text-text-secondary uppercase tracking-wider block">Arabic Font</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {(["Amiri", "KFGQ"] as const).map((font) => (
-                    <button
-                      key={font}
-                      onClick={() => setArabicFont(font)}
-                      className={`py-2 text-xs rounded-xl border transition-all ${arabicFont === font
-                        ? "bg-primary-green/10 border-primary-green text-primary-green font-bold"
-                        : "bg-bg-content border-border-subtle text-text-secondary hover:border-white/20"
-                        }`}
-                    >
-                      {font}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-12 p-6 bg-bg-main/50 rounded-2xl border border-border-subtle space-y-4">
-                <p className="text-xs text-text-secondary/50 uppercase tracking-widest mb-2 text-center">Live Preview</p>
-                <p
-                  className="text-right text-text-primary"
-                  style={{ fontSize: `${arabicFontSize}px`, fontFamily: arabicFont === "Amiri" ? "var(--font-amiri)" : "serif" }}
-                  suppressHydrationWarning
-                >
-                  بِسْمِ اللَّهِ
-                </p>
-                <p
-                  className="text-text-secondary"
-                  style={{ fontSize: `${translationFontSize}px` }}
-                  suppressHydrationWarning
-                >
-                  In the name of Allah...
-                </p>
-              </div>
-            </div>
-
-            <div className="absolute bottom-8 left-8 right-8">
-              <button
-                onClick={() => setIsSettingsOpen(false)}
-                className="w-full bg-primary-green hover:bg-primary-green/90 text-white py-3 rounded-xl font-bold shadow-lg shadow-primary-green/20 transition-all"
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Settings Sidebar */}
+      <SettingsSidebar
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
     </header>
   );
 }

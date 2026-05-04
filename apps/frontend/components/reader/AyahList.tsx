@@ -118,6 +118,7 @@ export default function AyahList() {
               juz: 1,
               arabic: ayah.text_arabic,
               translation_en: ayah.translation_en,
+              translation_bn: ayah.translation_bn,
               surahNumber: surah?.number || 1
             }}
             surahName={surah?.name_english || ""}

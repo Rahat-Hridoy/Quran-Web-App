@@ -5,13 +5,19 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 interface ReaderSettings {
   arabicFontSize: number;
   translationFontSize: number;
-  arabicFont: "Amiri" | "KFGQ";
+  arabicFont: "Amiri" | "KFGQ" | "Indopak";
+  translationLanguage: "english" | "bangla";
+  wordByWordLanguage: "english" | "bangla";
+  translator: string;
 }
 
 interface ReaderSettingsContextType extends ReaderSettings {
   setArabicFontSize: (size: number) => void;
   setTranslationFontSize: (size: number) => void;
-  setArabicFont: (font: "Amiri" | "KFGQ") => void;
+  setArabicFont: (font: "Amiri" | "KFGQ" | "Indopak") => void;
+  setTranslationLanguage: (lang: "english" | "bangla") => void;
+  setWordByWordLanguage: (lang: "english" | "bangla") => void;
+  setTranslator: (translator: string) => void;
 }
 
 const ReaderSettingsContext = createContext<ReaderSettingsContextType | undefined>(undefined);
@@ -19,7 +25,10 @@ const ReaderSettingsContext = createContext<ReaderSettingsContextType | undefine
 export function ReaderSettingsProvider({ children }: { children: React.ReactNode }) {
   const [arabicFontSize, setArabicFontSize] = useState(32);
   const [translationFontSize, setTranslationFontSize] = useState(16);
-  const [arabicFont, setArabicFont] = useState<"Amiri" | "KFGQ">("Amiri");
+  const [arabicFont, setArabicFont] = useState<"Amiri" | "KFGQ" | "Indopak">("KFGQ");
+  const [translationLanguage, setTranslationLanguage] = useState<"english" | "bangla">("english");
+  const [wordByWordLanguage, setWordByWordLanguage] = useState<"english" | "bangla">("english");
+  const [translator, setTranslator] = useState("Sahih International");
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Load from localStorage on mount
@@ -30,7 +39,10 @@ export function ReaderSettingsProvider({ children }: { children: React.ReactNode
         const parsed = JSON.parse(saved);
         setArabicFontSize(parsed.arabicFontSize || 32);
         setTranslationFontSize(parsed.translationFontSize || 16);
-        setArabicFont(parsed.arabicFont || "Amiri");
+        setArabicFont(parsed.arabicFont || "KFGQ");
+        setTranslationLanguage(parsed.translationLanguage || "english");
+        setWordByWordLanguage(parsed.wordByWordLanguage || "english");
+        setTranslator(parsed.translator || "Sahih International");
       } catch (e) {
         console.error("Failed to parse settings", e);
       }
@@ -41,10 +53,17 @@ export function ReaderSettingsProvider({ children }: { children: React.ReactNode
   // Save to localStorage when settings change
   useEffect(() => {
     if (isLoaded) {
-      const settings = { arabicFontSize, translationFontSize, arabicFont };
+      const settings = {
+        arabicFontSize,
+        translationFontSize,
+        arabicFont,
+        translationLanguage,
+        wordByWordLanguage,
+        translator
+      };
       localStorage.setItem("reader-settings", JSON.stringify(settings));
     }
-  }, [arabicFontSize, translationFontSize, arabicFont, isLoaded]);
+  }, [arabicFontSize, translationFontSize, arabicFont, translationLanguage, wordByWordLanguage, translator, isLoaded]);
 
   return (
     <ReaderSettingsContext.Provider
@@ -52,9 +71,15 @@ export function ReaderSettingsProvider({ children }: { children: React.ReactNode
         arabicFontSize,
         translationFontSize,
         arabicFont,
+        translationLanguage,
+        wordByWordLanguage,
+        translator,
         setArabicFontSize,
         setTranslationFontSize,
         setArabicFont,
+        setTranslationLanguage,
+        setWordByWordLanguage,
+        setTranslator,
       }}
     >
       {children}
