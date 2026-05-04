@@ -17,6 +17,9 @@ export default function ContentSidebar() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const activeSurahId = searchParams.get("surah") || "1";
+  const activePage = searchParams.get("page") || "1";
+
+  const allPages = Array.from({ length: 604 }, (_, i) => i + 1);
 
   useEffect(() => {
     const getSurahs = async () => {
@@ -47,6 +50,15 @@ export default function ContentSidebar() {
     router.push(`/read?${params.toString()}`);
   };
 
+  const handlePageClick = (pageNumber: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", pageNumber.toString());
+    // Optionally reset surah/ayah if pages are handled differently, 
+    // but usually pages span across surahs. 
+    // For now, let's just set the page.
+    router.push(`/read?${params.toString()}`);
+  };
+
   const filteredSurahs = surahs.filter(s =>
     s.name_english.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -58,6 +70,10 @@ export default function ContentSidebar() {
   const filteredJuz = JUZ_DATA.filter(j => 
     j.id.toString().includes(searchQuery) || 
     j.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredPages = allPages.filter(p => 
+    p.toString().includes(searchQuery)
   );
 
   return (
@@ -202,6 +218,35 @@ export default function ContentSidebar() {
                     })}
                   </div>
                 )}
+              </div>
+            ))}
+
+            {activeTab === "page" && filteredPages.map((page) => (
+              <div
+                key={page}
+                onClick={() => handlePageClick(page)}
+                role="button"
+                className={`group/card flex w-full min-w-[200px] cursor-pointer select-none items-center justify-start gap-4 px-4 py-4 rounded-xl transition-all duration-300 border ${activePage === page.toString()
+                  ? "bg-primary-green/10 border-primary-green/20 shadow-lg"
+                  : "bg-transparent border-white/10 hover:bg-white/5 hover:border-white/20"
+                  }`}
+              >
+                {/* Number Badge (Diamond Shape) */}
+                <div className="relative flex-shrink-0 w-9 h-9 flex items-center justify-center py-3">
+                  <div className={`absolute inset-0 rotate-45 rounded-lg transition-all duration-300 ${activePage === page.toString()
+                    ? "bg-primary-green shadow-md shadow-primary-green/20"
+                    : "bg-[#1a1a1a] group-hover/card:bg-primary-green/10"
+                    }`} />
+                  <span className={`relative text-[13px] font-bold transition-colors ${activePage === page.toString() ? "text-white" : "text-text-secondary group-hover/card:text-primary-green"}`}>
+                    {page.toString().padStart(2, '0')}
+                  </span>
+                </div>
+
+                <div className="flex-1 min-w-0 text-left">
+                  <h4 className={`text-[15px] font-bold transition-colors truncate ${activePage === page.toString() ? "text-white" : "text-text-primary group-hover/card:text-primary-green"}`}>
+                    Page {page.toString().padStart(2, '0')}
+                  </h4>
+                </div>
               </div>
             ))}
 
