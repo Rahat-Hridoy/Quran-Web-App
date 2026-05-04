@@ -10,7 +10,7 @@ export default function ContentSidebar() {
   const [surahs, setSurahs] = useState<Surah[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const activeSurahId = searchParams.get("surah") || "1";
@@ -35,24 +35,23 @@ export default function ContentSidebar() {
     router.push(`/read?${params.toString()}`);
   };
 
-  const filteredSurahs = surahs.filter(s => 
+  const filteredSurahs = surahs.filter(s =>
     s.name_english.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="w-[340px] h-full bg-bg-sidebar border-r border-border-subtle flex flex-col">
+    <div className="w-[340px] h-full bg-bg-sidebar border-r border-white/5 flex flex-col">
       {/* Tab Switcher */}
       <div className="p-6">
-        <div className="bg-bg-content/50 p-1 rounded-xl flex gap-1 border border-border-subtle">
+        <div className="bg-[#121212] p-1.5 rounded-2xl flex gap-1 border border-white/5 shadow-inner">
           {(["surah", "juz", "page"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all ${
-                activeTab === tab 
-                  ? "bg-primary-green text-white shadow-lg shadow-primary-green/20" 
-                  : "text-text-secondary hover:text-white"
-              }`}
+              className={`flex-1 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all duration-300 ${activeTab === tab
+                  ? "bg-[#2E7D32] text-white shadow-lg shadow-[#2E7D32]/20 scale-[1.02]"
+                  : "text-text-secondary/50 hover:text-white hover:bg-white/5"
+                }`}
             >
               {tab}
             </button>
@@ -61,13 +60,13 @@ export default function ContentSidebar() {
 
         {/* Search */}
         <div className="relative mt-6">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary/50" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary/30" />
           <input
             type="text"
-            placeholder="Search Surah..."
+            placeholder={`Search ${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-bg-content border border-border-subtle rounded-xl py-3 pl-11 pr-4 text-xs focus:outline-none focus:ring-1 focus:ring-primary-green/30 transition-all"
+            className="w-full bg-[#121212] border border-white/5 rounded-2xl py-3.5 pl-12 pr-4 text-[13px] focus:outline-none focus:ring-1 focus:ring-primary-green/30 transition-all placeholder:text-text-secondary/20"
           />
         </div>
       </div>
@@ -85,15 +84,13 @@ export default function ContentSidebar() {
               <button
                 key={surah.id}
                 onClick={() => handleSurahClick(surah.id)}
-                className={`w-full group flex items-center gap-4 p-3 rounded-xl transition-all ${
-                  activeSurahId === surah.id.toString() 
-                    ? "bg-primary-green/10 border border-primary-green/20" 
+                className={`w-full group flex items-center gap-4 p-3 rounded-xl transition-all ${activeSurahId === surah.id.toString()
+                    ? "bg-primary-green/10 border border-primary-green/20"
                     : "hover:bg-white/5 border border-transparent"
-                }`}
+                  }`}
               >
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xs font-mono font-bold transition-colors ${
-                  activeSurahId === surah.id.toString() ? "bg-primary-green text-white" : "bg-bg-content text-text-secondary group-hover:text-primary-green"
-                }`}>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xs font-mono font-bold transition-colors ${activeSurahId === surah.id.toString() ? "bg-primary-green text-white" : "bg-bg-content text-text-secondary group-hover:text-primary-green"
+                  }`}>
                   {surah.number}
                 </div>
 
