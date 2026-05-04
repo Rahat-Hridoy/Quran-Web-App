@@ -7,6 +7,7 @@ import React, {
   useRef,
   useCallback,
   useEffect,
+  useMemo,
 } from "react";
 import { getAudioUrl } from "@/lib/api";
 
@@ -124,12 +125,20 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
       audio.addEventListener("loadedmetadata", () => {
         const key = `${surahNumber}:${ayahNumber}`;
         ayahDurationsRef.current.set(key, audio.duration);
-        setState((prev) => ({
-          ...prev,
-          duration: audio.duration,
-          accumulatedDuration: computeAccumulated(surahNumber, ayahNumber),
-          estimatedSurahDuration: computeEstimatedTotal(surahNumber, prev.totalAyahs),
-        }));
+        setState((prev) => {
+          // Lock estimated duration based on the first ayah so it NEVER changes during playback
+          let newEstimated = prev.estimatedSurahDuration;
+          if (newEstimated === 0 || isNaN(newEstimated)) {
+            newEstimated = audio.duration * prev.totalAyahs;
+          }
+          
+          return {
+            ...prev,
+            duration: audio.duration,
+            accumulatedDuration: computeAccumulated(surahNumber, ayahNumber),
+            estimatedSurahDuration: newEstimated,
+          };
+        });
       });
 
       audio.addEventListener("timeupdate", () => {
@@ -154,8 +163,8 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
             }, 0);
             return prev;
           } else {
-            // Reached end of surah
-            return { ...prev, isPlaying: false, currentTime: 0 };
+            // Reached end of surah - keep progress at 100%
+            return { ...prev, isPlaying: false, currentTime: prev.duration };
           }
         });
       });
@@ -197,10 +206,19 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
       audioRef.current.pause();
       setState((prev) => ({ ...prev, isPlaying: false }));
     } else {
+      // If the surah is completely finished (last ayah and time is at the end), restart the surah
+      if (
+        state.currentAyahNumber === state.totalAyahs &&
+        state.currentTime >= state.duration &&
+        state.duration > 0
+      ) {
+        playAyah(state.currentSurahNumber, 1, state.surahName, state.totalAyahs);
+        return;
+      }
       audioRef.current.play().catch(console.error);
       setState((prev) => ({ ...prev, isPlaying: true }));
     }
-  }, [state.isPlaying]);
+  }, [state, playAyah]);
 
   const seekTo = useCallback((time: number) => {
     if (!audioRef.current) return;
@@ -282,8 +300,20 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     };
   }, []);
 
-  // Computed: total surah elapsed time
-  const surahElapsedTime = state.accumulatedDuration + state.currentTime;
+  // Calculate a perfectly smooth normalized elapsed time based on ayah progress
+  // This guarantees the timer never jumps and always reaches exactly estimatedSurahDuration
+  const surahElapsedTime = useMemo(() => {
+    if (!state.estimatedSurahDuration || !state.totalAyahs || state.totalAyahs === 0) return 0;
+    
+    // If fully finished
+    if (state.currentAyahNumber === state.totalAyahs && state.currentTime >= state.duration && state.duration > 0) {
+      return state.estimatedSurahDuration;
+    }
+
+    const ayahProgress = state.duration > 0 ? state.currentTime / state.duration : 0;
+    const surahProgress = (state.currentAyahNumber - 1 + ayahProgress) / state.totalAyahs;
+    return surahProgress * state.estimatedSurahDuration;
+  }, [state.currentAyahNumber, state.currentTime, state.duration, state.estimatedSurahDuration, state.totalAyahs]);
 
   return (
     <AudioPlayerContext.Provider
