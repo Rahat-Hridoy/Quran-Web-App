@@ -95,7 +95,7 @@ export default function AudioPlayerBar() {
     };
   }, [isDragging, duration, seekTo]);
 
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const progress = estimatedSurahDuration > 0 ? (surahElapsedTime / estimatedSurahDuration) * 100 : 0;
 
   if (!isVisible) return null;
 
@@ -172,18 +172,16 @@ export default function AudioPlayerBar() {
                         setReciter(r.id);
                         setShowReciterMenu(false);
                       }}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-                        reciterId === r.id
-                          ? "bg-[#428038]/10 text-[#428038]"
-                          : "text-white/70 hover:bg-white/5 hover:text-white"
-                      }`}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${reciterId === r.id
+                        ? "bg-[#428038]/10 text-[#428038]"
+                        : "text-white/70 hover:bg-white/5 hover:text-white"
+                        }`}
                     >
                       <div
-                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-                          reciterId === r.id
-                            ? "border-[#428038] bg-[#428038]"
-                            : "border-white/20"
-                        }`}
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${reciterId === r.id
+                          ? "border-[#428038] bg-[#428038]"
+                          : "border-white/20"
+                          }`}
                       >
                         {reciterId === r.id && (
                           <Check size={12} className="text-white" />
