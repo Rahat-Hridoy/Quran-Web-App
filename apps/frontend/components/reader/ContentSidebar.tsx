@@ -4,6 +4,7 @@ import { Search, Book, Bookmark, List, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { fetchSurahs, Surah } from "@/lib/api";
 import { useSearchParams, useRouter } from "next/navigation";
+import { JUZ_DATA, JuzData } from "@/lib/juz-data";
 
 export default function ContentSidebar() {
   const [activeTab, setActiveTab] = useState<"surah" | "juz" | "page">("surah");
@@ -11,6 +12,7 @@ export default function ContentSidebar() {
   const [surahs, setSurahs] = useState<Surah[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [expandedJuzId, setExpandedJuzId] = useState<number | null>(null);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -51,6 +53,11 @@ export default function ContentSidebar() {
 
   const filteredAyahs = ayahs.filter(a =>
     a.ayah_number.toString().includes(searchQuery)
+  );
+  
+  const filteredJuz = JUZ_DATA.filter(j => 
+    j.id.toString().includes(searchQuery) || 
+    j.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -123,6 +130,78 @@ export default function ContentSidebar() {
                     {surah.name_translation}
                   </p>
                 </div>
+              </div>
+            ))}
+
+            {activeTab === "juz" && filteredJuz.map((juz) => (
+              <div key={juz.id} className="space-y-2">
+                <div
+                  onClick={() => setExpandedJuzId(expandedJuzId === juz.id ? null : juz.id)}
+                  role="button"
+                  className={`group/juz flex w-full cursor-pointer select-none items-center justify-between px-4 py-4 rounded-xl transition-all duration-300 border ${expandedJuzId === juz.id
+                    ? "bg-primary-green/5 border-primary-green/20"
+                    : "bg-transparent border-white/5 hover:bg-white/5"
+                    }`}
+                >
+                  <div className="flex flex-col items-start gap-1">
+                    <span className="text-primary-green text-[14px] font-bold">
+                      Juz {juz.id}
+                    </span>
+                    <span className="text-text-secondary/60 text-[12px] font-medium">
+                      {juz.name}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="text-white text-[13px] font-bold">
+                      {juz.surah_ids.length}
+                    </span>
+                    <span className="text-text-secondary/40 text-[10px] uppercase tracking-wider">
+                      Surah
+                    </span>
+                  </div>
+                </div>
+
+                {expandedJuzId === juz.id && (
+                  <div className="pl-4 space-y-2 border-l border-white/5 ml-2 mt-2">
+                    {juz.surah_ids.map((surahId) => {
+                      const surah = surahs.find(s => s.number === surahId);
+                      if (!surah) return null;
+                      const isActive = activeSurahId === surah.id.toString();
+                      
+                      return (
+                        <div
+                          key={surah.id}
+                          onClick={() => handleSurahClick(surah.id)}
+                          role="button"
+                          className={`group/card flex w-full cursor-pointer select-none items-center justify-start gap-4 px-4 py-3 rounded-xl transition-all duration-300 border ${isActive
+                            ? "bg-primary-green/10 border-primary-green/20 shadow-md"
+                            : "bg-[#141414] border-white/5 hover:bg-white/5 hover:border-white/10"
+                            }`}
+                        >
+                          {/* Number Badge (Diamond Shape) */}
+                          <div className="relative flex-shrink-0 w-8 h-8 flex items-center justify-center">
+                            <div className={`absolute inset-0 rotate-45 rounded-md transition-all duration-300 ${isActive
+                              ? "bg-primary-green shadow-sm shadow-primary-green/20"
+                              : "bg-[#1a1a1a] group-hover/card:bg-primary-green/10"
+                              }`} />
+                            <span className={`relative text-[11px] font-bold transition-colors ${isActive ? "text-white" : "text-text-secondary group-hover/card:text-primary-green"}`}>
+                              {surah.number}
+                            </span>
+                          </div>
+
+                          <div className="flex-1 min-w-0 text-left">
+                            <h4 className={`text-[13px] font-bold transition-colors truncate ${isActive ? "text-white" : "text-text-primary group-hover/card:text-primary-green"}`}>
+                              {surah.name_english}
+                            </h4>
+                            <p className="text-[11px] text-text-secondary/50 transition-colors mt-0.5 truncate capitalize font-medium">
+                              {surah.name_translation}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             ))}
 
