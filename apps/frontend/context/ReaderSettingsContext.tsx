@@ -9,6 +9,7 @@ interface ReaderSettings {
   translationLanguage: "english" | "bangla";
   wordByWordLanguage: "english" | "bangla";
   translator: string;
+  activeMushaf: "unicode" | "hafezi" | "madani" | "indopak";
 }
 
 interface ReaderSettingsContextType extends ReaderSettings {
@@ -18,6 +19,7 @@ interface ReaderSettingsContextType extends ReaderSettings {
   setTranslationLanguage: (lang: "english" | "bangla") => void;
   setWordByWordLanguage: (lang: "english" | "bangla") => void;
   setTranslator: (translator: string) => void;
+  setMushaf: (mushaf: "unicode" | "hafezi" | "madani" | "indopak") => void;
 }
 
 const ReaderSettingsContext = createContext<ReaderSettingsContextType | undefined>(undefined);
@@ -29,6 +31,7 @@ export function ReaderSettingsProvider({ children }: { children: React.ReactNode
   const [translationLanguage, setTranslationLanguage] = useState<"english" | "bangla">("english");
   const [wordByWordLanguage, setWordByWordLanguage] = useState<"english" | "bangla">("english");
   const [translator, setTranslator] = useState("Sahih International");
+  const [activeMushaf, setActiveMushaf] = useState<"unicode" | "hafezi" | "madani" | "indopak">("unicode");
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Load from localStorage on mount
@@ -43,6 +46,7 @@ export function ReaderSettingsProvider({ children }: { children: React.ReactNode
         setTranslationLanguage(parsed.translationLanguage || "english");
         setWordByWordLanguage(parsed.wordByWordLanguage || "english");
         setTranslator(parsed.translator || "Sahih International");
+        setActiveMushaf(parsed.activeMushaf || "unicode");
       } catch (e) {
         console.error("Failed to parse settings", e);
       }
@@ -59,11 +63,16 @@ export function ReaderSettingsProvider({ children }: { children: React.ReactNode
         arabicFont,
         translationLanguage,
         wordByWordLanguage,
-        translator
+        translator,
+        activeMushaf
       };
       localStorage.setItem("reader-settings", JSON.stringify(settings));
     }
-  }, [arabicFontSize, translationFontSize, arabicFont, translationLanguage, wordByWordLanguage, translator, isLoaded]);
+  }, [arabicFontSize, translationFontSize, arabicFont, translationLanguage, wordByWordLanguage, translator, activeMushaf, isLoaded]);
+
+  const setMushaf = (mushaf: "unicode" | "hafezi" | "madani" | "indopak") => {
+    setActiveMushaf(mushaf);
+  };
 
   return (
     <ReaderSettingsContext.Provider
@@ -74,12 +83,14 @@ export function ReaderSettingsProvider({ children }: { children: React.ReactNode
         translationLanguage,
         wordByWordLanguage,
         translator,
+        activeMushaf,
         setArabicFontSize,
         setTranslationFontSize,
         setArabicFont,
         setTranslationLanguage,
         setWordByWordLanguage,
         setTranslator,
+        setMushaf,
       }}
     >
       {children}

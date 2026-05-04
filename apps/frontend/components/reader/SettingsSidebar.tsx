@@ -19,7 +19,8 @@ export default function SettingsSidebar({ isOpen, onClose }: SettingsSidebarProp
     arabicFont, setArabicFont,
     translationLanguage, setTranslationLanguage,
     wordByWordLanguage, setWordByWordLanguage,
-    translator, setTranslator
+    translator, setTranslator,
+    activeMushaf, setMushaf
   } = useReaderSettings();
 
   const toggleSection = (section: string) => {
@@ -229,9 +230,80 @@ export default function SettingsSidebar({ isOpen, onClose }: SettingsSidebarProp
           )}
 
           {activeTab === "reading" && (
-            <div className="flex flex-col items-center justify-center py-10 opacity-30">
-              <Book className="w-10 h-10 mb-3" />
-              <p className="text-sm">Reading settings coming soon</p>
+            <div className="space-y-6 animate-in fade-in duration-300">
+              <div className="flex items-center gap-2.5 px-1">
+                <Book className="w-5 h-5 text-primary-green" />
+                <h3 className="text-[15px] font-bold text-white">Change Mushaf</h3>
+              </div>
+
+              <div className="space-y-3">
+                {[
+                  { id: "unicode", title: "Unicode Text Mushaf", desc: "Digital font rendering" },
+                  { id: "hafezi", title: "Hafezi Quran Mushaf", desc: "15 lines, optimized for Hifz" },
+                  { id: "madani", title: "New Madani Mushaf", desc: "Standard printed style" },
+                  { id: "indopak", title: "Indo-Pak Mushaf", desc: "South Asian script style" }
+                ].map((mushaf) => (
+                  <button
+                    key={mushaf.id}
+                    onClick={() => setMushaf(mushaf.id as any)}
+                    className={`w-full flex items-center gap-4 p-3 rounded-2xl border transition-all duration-300 group ${
+                      activeMushaf === mushaf.id
+                        ? "bg-primary-green/10 border-primary-green shadow-lg shadow-primary-green/5"
+                        : "bg-[#1a1a1a] border-white/5 hover:border-white/10 hover:bg-[#222222]"
+                    }`}
+                  >
+                    {/* Thumbnail Placeholder */}
+                    <div className={`w-14 h-14 rounded-xl flex-shrink-0 overflow-hidden border transition-colors ${
+                      activeMushaf === mushaf.id ? "border-primary-green/30" : "border-white/10"
+                    }`}>
+                      <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${
+                        mushaf.id === "unicode" ? "from-blue-500/20 to-indigo-500/20" :
+                        mushaf.id === "hafezi" ? "from-emerald-500/20 to-teal-500/20" :
+                        mushaf.id === "madani" ? "from-amber-500/20 to-orange-500/20" :
+                        "from-rose-500/20 to-pink-500/20"
+                      }`}>
+                         <Type className="w-6 h-6 opacity-20" />
+                      </div>
+                    </div>
+
+                    <div className="flex-1 text-left">
+                      <h4 className={`text-[13px] font-bold transition-colors ${
+                        activeMushaf === mushaf.id ? "text-primary-green" : "text-white"
+                      }`}>
+                        {mushaf.title}
+                      </h4>
+                      <p className="text-[10px] text-white/40 mt-0.5 font-medium tracking-wide">
+                        {mushaf.desc}
+                      </p>
+                    </div>
+
+                    {/* Radio Indicator */}
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                      activeMushaf === mushaf.id
+                        ? "border-primary-green bg-primary-green"
+                        : "border-white/10 group-hover:border-white/20"
+                    }`}>
+                      {activeMushaf === mushaf.id && (
+                        <div className="w-2 h-2 bg-white rounded-full shadow-sm" />
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Extra Info Card */}
+              <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-4 mt-8">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
+                    <Book className="w-4 h-4 text-white/40" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] text-white/80 leading-relaxed">
+                      Mushaf settings allow you to change the visual appearance of the Quran pages to match your reading preference.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>

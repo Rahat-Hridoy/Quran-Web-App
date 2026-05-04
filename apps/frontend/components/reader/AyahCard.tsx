@@ -126,7 +126,7 @@ export default function AyahCard({ ayah, surahName, totalAyahs }: AyahCardProps)
             style={{
               direction: 'rtl',
               fontSize: `${arabicFontSize}px`,
-              fontFamily: arabicFont === "Amiri" ? "var(--font-amiri)" : arabicFont === "Indopak" ? "serif" : "inherit"
+              fontFamily: arabicFont === "Amiri" ? "var(--font-amiri)" : "serif"
             }}
             suppressHydrationWarning
           >
