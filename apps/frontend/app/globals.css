@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-main: var(--bg-main);
+  --color-bg-sidebar: var(--bg-sidebar);
+  --color-bg-content: var(--bg-content);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-primary-green: var(--primary-green);
+  --color-primary-gold: var(--primary-gold);
+  --color-card-bg: var(--card-bg);
+  --color-border-subtle: var(--border-subtle);
+  --font-serif: var(--font-cinzel), serif;
+  --font-sans: var(--font-inter), sans-serif;
+  --font-arabic: var(--font-amiri), serif;
+}
+
+:root {
+  --bg-main: #0a0a0a;
+  --bg-sidebar: #0f0f0f;
+  --bg-content: #141414;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --primary-green: #2e7d32;
+  --primary-gold: #d4af37;
+  --card-bg: #1a1a1a;
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  
+  --background: var(--bg-main);
+  --foreground: var(--text-primary);
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+  }
+}
+
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 2s infinite ease-in-out;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-green);
+}
