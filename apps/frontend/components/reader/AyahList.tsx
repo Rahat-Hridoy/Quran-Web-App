@@ -6,6 +6,7 @@ import { fetchAyahs, fetchSurahById, Ayah, Surah } from "@/lib/api";
 import AyahCard from "./AyahCard";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
+import { useAudioPlayer } from "@/context/AudioPlayerContext";
 
 export default function AyahList() {
   const searchParams = useSearchParams();
@@ -13,6 +14,19 @@ export default function AyahList() {
   const [ayahs, setAyahs] = useState<Ayah[]>([]);
   const [surah, setSurah] = useState<Surah | null>(null);
   const [loading, setLoading] = useState(true);
+  const { isVisible: isPlayerVisible, currentAyahNumber: playingAyah, currentSurahNumber: playingSurah, isPlaying } = useAudioPlayer();
+
+  // Auto-scroll to the currently playing ayah
+  useEffect(() => {
+    if (!isPlayerVisible || !isPlaying) return;
+    // Only auto-scroll if the playing surah matches the displayed surah
+    if (playingSurah !== (surah?.number || 0)) return;
+
+    const element = document.getElementById(`ayah-${playingAyah}`);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [playingAyah, playingSurah, isPlayerVisible, isPlaying, surah]);
 
   useEffect(() => {
     const ayahParam = searchParams.get("ayah");
@@ -95,7 +109,7 @@ export default function AyahList() {
       )}
 
       {/* Ayahs Container */}
-      <div className="max-w-6xl mx-auto px-8 pb-32">
+      <div className={`w-full ${isPlayerVisible ? "pb-40" : "pb-30"}`}>
         {ayahs.map((ayah) => (
           <AyahCard
             key={ayah.id}
@@ -106,6 +120,8 @@ export default function AyahList() {
               translation_en: ayah.translation_en,
               surahNumber: surah?.number || 1
             }}
+            surahName={surah?.name_english || ""}
+            totalAyahs={surah?.total_ayahs || 0}
           />
         ))}
       </div>

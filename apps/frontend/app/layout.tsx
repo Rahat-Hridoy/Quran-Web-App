@@ -24,6 +24,7 @@ export const metadata: Metadata = {
 };
 
 import { ReaderSettingsProvider } from "@/context/ReaderSettingsContext";
+import { AudioPlayerProvider } from "@/context/AudioPlayerContext";
 
 export default function RootLayout({
   children,
@@ -34,7 +35,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${cinzel.variable} ${amiri.variable} font-sans antialiased`}>
         <ReaderSettingsProvider>
-          {children}
+          <AudioPlayerProvider>
+            {children}
+          </AudioPlayerProvider>
         </ReaderSettingsProvider>
       </body>
     </html>

@@ -1,9 +1,8 @@
 "use client";
 
-import { Play, Bookmark, MoreHorizontal, BookOpen } from "lucide-react";
+import { Play, Pause, Bookmark, MoreHorizontal, BookOpen } from "lucide-react";
 import { useReaderSettings } from "@/context/ReaderSettingsContext";
-import { getAudioUrl } from "@/lib/api";
-import { useState, useRef } from "react";
+import { useAudioPlayer } from "@/context/AudioPlayerContext";
 
 interface AyahCardProps {
   ayah: {
@@ -13,29 +12,43 @@ interface AyahCardProps {
     translation_en: string;
     surahNumber: number;
   };
+  surahName: string;
+  totalAyahs: number;
 }
 
-export default function AyahCard({ ayah }: AyahCardProps) {
+export default function AyahCard({ ayah, surahName, totalAyahs }: AyahCardProps) {
   const { arabicFontSize, translationFontSize, arabicFont } = useReaderSettings();
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { playAyah, isPlaying, isVisible, currentSurahNumber, currentAyahNumber, togglePlayPause } = useAudioPlayer();
+
+  // Is THIS specific ayah currently playing?
+  const isThisPlaying =
+    isPlaying &&
+    currentSurahNumber === ayah.surahNumber &&
+    currentAyahNumber === ayah.number;
+
+  // Is this ayah the active one in the player (even if paused)?
+  const isThisActive =
+    isVisible &&
+    currentSurahNumber === ayah.surahNumber &&
+    currentAyahNumber === ayah.number;
 
   const handlePlay = () => {
-    if (isPlaying) {
-      audioRef.current?.pause();
-      setIsPlaying(false);
+    if (isThisActive) {
+      // Toggle play/pause for the same ayah
+      togglePlayPause();
     } else {
-      if (!audioRef.current) {
-        audioRef.current = new Audio(getAudioUrl(ayah.surahNumber, ayah.number));
-        audioRef.current.onended = () => setIsPlaying(false);
-      }
-      audioRef.current.play();
-      setIsPlaying(true);
+      // Play a new ayah
+      playAyah(ayah.surahNumber, ayah.number, surahName, totalAyahs);
     }
   };
 
   return (
-    <div id={`ayah-${ayah.number}`} className="group flex border-b border-white/5 py-12 transition-colors">
+    <div
+      id={`ayah-${ayah.number}`}
+      className={`group flex border-b border-white/5 py-8 transition-all duration-300 ${
+        isThisActive ? "bg-[#428038]/10 border-l-2 border-l-[#428038]" : ""
+      }`}
+    >
       {/* Left Action Bar */}
       <div className="w-24 flex flex-col items-center">
         <div className="text-[16px] font-bold text-[#428038] mb-8">
@@ -45,10 +58,20 @@ export default function AyahCard({ ayah }: AyahCardProps) {
         <div className="flex flex-col gap-6">
           <button
             onClick={handlePlay}
-            className={`transition-all hover:scale-110 ${isPlaying ? "text-[#428038]" : "text-text-secondary/30 hover:text-white"}`}
-            title={isPlaying ? "Pause" : "Play"}
+            className={`transition-all hover:scale-110 ${
+              isThisPlaying
+                ? "text-[#428038]"
+                : isThisActive
+                ? "text-[#428038]/60"
+                : "text-text-secondary/30 hover:text-white"
+            }`}
+            title={isThisPlaying ? "Pause" : "Play"}
           >
-            <Play size={20} fill={isPlaying ? "currentColor" : "none"} strokeWidth={1} />
+            {isThisPlaying ? (
+              <Pause size={20} fill="currentColor" strokeWidth={1} />
+            ) : (
+              <Play size={20} fill={isThisActive ? "currentColor" : "none"} strokeWidth={1} />
+            )}
           </button>
           <button className="text-text-secondary/30 hover:text-white transition-all hover:scale-110" title="Reading Mode">
             <BookOpen size={20} strokeWidth={1} />
@@ -67,7 +90,9 @@ export default function AyahCard({ ayah }: AyahCardProps) {
         {/* Arabic Text Section */}
         <div className="w-full flex justify-end mb-10">
           <p
-            className="text-right leading-[2.4] text-white/95 selection:bg-[#428038]/30 font-medium"
+            className={`text-right leading-[2.4] selection:bg-[#428038]/30 font-medium transition-colors duration-300 ${
+              isThisActive ? "text-[#428038]" : "text-white/95"
+            }`}
             style={{
               direction: 'rtl',
               fontSize: `${arabicFontSize}px`,

@@ -5,6 +5,7 @@ import { Menu, X, Loader2 } from "lucide-react";
 import IconSidebar from "./IconSidebar";
 import ContentSidebar from "./ContentSidebar";
 import ReaderHeader from "./ReaderHeader";
+import AudioPlayerBar from "./AudioPlayerBar";
 
 interface ReaderLayoutProps {
   children: React.ReactNode;
@@ -92,6 +93,9 @@ export default function ReaderLayout({ children }: ReaderLayoutProps) {
           </main>
         </div>
       </div>
+
+      {/* Persistent Audio Player Bar */}
+      <AudioPlayerBar />
     </div>
   );
 }
