@@ -56,7 +56,7 @@ export default function AyahList() {
     <div className="bg-bg-main min-h-screen">
       {/* Surah Header */}
       {surah && (
-        <div className="relative h-64 flex items-center justify-center border-b border-white/5 overflow-hidden">
+        <div className="relative h-[95px] flex items-center justify-center overflow-hidden my-[20px]">
           {/* Mosque Image */}
           <div className="absolute left-10 top-1/2 -translate-y-1/2">
             <Image
@@ -70,13 +70,27 @@ export default function AyahList() {
           </div>
 
           <div className="text-center z-10">
-            <h1 className="text-4xl font-bold text-white mb-3">
+            <h1 className="text-2xl font-bold text-white mb-3">
               Surah {surah.name_english}
             </h1>
-            <p className="text-text-secondary/60 font-medium tracking-wide capitalize">
+            <p className="text-text-secondary/60 text-sm font-medium tracking-wide capitalize">
               Ayah-{surah.total_ayahs}, {surah.name_translation}
             </p>
           </div>
+
+          {/* Bismillah Image */}
+          {surah.number !== 1 && (
+            <div className="absolute right-10 top-1/2 -translate-y-1/2">
+              <Image
+                src="/bismillah.2a2f3d14.svg"
+                alt="Bismillah"
+                loading="lazy"
+                width={180}
+                height={60}
+                className="object-contain grayscale invert brightness-200 opacity-90"
+              />
+            </div>
+          )}
         </div>
       )}
 
@@ -90,7 +104,7 @@ export default function AyahList() {
               juz: 1,
               arabic: ayah.text_arabic,
               translation_en: ayah.translation_en,
-              surahNumber: surahId
+              surahNumber: surah?.number || 1
             }}
           />
         ))}
