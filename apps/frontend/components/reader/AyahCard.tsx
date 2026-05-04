@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { Play, Pause, Bookmark, MoreHorizontal, BookOpen } from "lucide-react";
 import { useReaderSettings } from "@/context/ReaderSettingsContext";
 import { useAudioPlayer } from "@/context/AudioPlayerContext";
@@ -18,7 +19,16 @@ interface AyahCardProps {
 
 export default function AyahCard({ ayah, surahName, totalAyahs }: AyahCardProps) {
   const { arabicFontSize, translationFontSize, arabicFont } = useReaderSettings();
-  const { playAyah, isPlaying, isVisible, currentSurahNumber, currentAyahNumber, togglePlayPause } = useAudioPlayer();
+  const {
+    playAyah,
+    isPlaying,
+    isVisible,
+    currentSurahNumber,
+    currentAyahNumber,
+    currentTime,
+    duration,
+    togglePlayPause,
+  } = useAudioPlayer();
 
   // Is THIS specific ayah currently playing?
   const isThisPlaying =
@@ -31,6 +41,21 @@ export default function AyahCard({ ayah, surahName, totalAyahs }: AyahCardProps)
     isVisible &&
     currentSurahNumber === ayah.surahNumber &&
     currentAyahNumber === ayah.number;
+
+  // Split Arabic text into words for word-by-word highlighting
+  const arabicWords = useMemo(() => {
+    return ayah.arabic.split(/\s+/).filter(Boolean);
+  }, [ayah.arabic]);
+
+  // Calculate which word index should be highlighted based on playback progress
+  // Words up to this index (inclusive) are highlighted green
+  const highlightedWordIndex = useMemo(() => {
+    if (!isThisPlaying || !duration || duration === 0) return -1;
+    const progress = currentTime / duration; // 0 to 1
+    // Map progress to word index — proportional distribution
+    const index = Math.floor(progress * arabicWords.length);
+    return Math.min(index, arabicWords.length - 1);
+  }, [isThisPlaying, currentTime, duration, arabicWords.length]);
 
   const handlePlay = () => {
     if (isThisActive) {
@@ -90,9 +115,7 @@ export default function AyahCard({ ayah, surahName, totalAyahs }: AyahCardProps)
         {/* Arabic Text Section */}
         <div className="w-full flex justify-end mb-10">
           <p
-            className={`text-right leading-[2.4] selection:bg-[#428038]/30 font-medium transition-colors duration-300 ${
-              isThisActive ? "text-[#428038]" : "text-white/95"
-            }`}
+            className="text-right leading-[2.4] selection:bg-[#428038]/30 font-medium"
             style={{
               direction: 'rtl',
               fontSize: `${arabicFontSize}px`,
@@ -100,7 +123,35 @@ export default function AyahCard({ ayah, surahName, totalAyahs }: AyahCardProps)
             }}
             suppressHydrationWarning
           >
-            {ayah.arabic}
+            {isThisPlaying || (isThisActive && highlightedWordIndex >= 0) ? (
+              // Word-by-word rendering with highlight sync
+              arabicWords.map((word, i) => (
+                <span
+                  key={i}
+                  className="transition-colors duration-200"
+                  style={{
+                    color:
+                      i <= highlightedWordIndex
+                        ? "#428038"
+                        : isThisActive
+                        ? "rgba(255,255,255,0.4)"
+                        : "rgba(255,255,255,0.95)",
+                  }}
+                >
+                  {word}
+                  {i < arabicWords.length - 1 ? " " : ""}
+                </span>
+              ))
+            ) : (
+              // Default: single text block (no per-word rendering)
+              <span
+                className={`transition-colors duration-300 ${
+                  isThisActive ? "text-[#428038]" : "text-white/95"
+                }`}
+              >
+                {ayah.arabic}
+              </span>
+            )}
           </p>
         </div>
 
