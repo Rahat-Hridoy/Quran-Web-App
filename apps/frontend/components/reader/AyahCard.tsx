@@ -1,6 +1,6 @@
 "use client";
 
-import { Play, Bookmark, MoreHorizontal, BookOpen, Share2 } from "lucide-react";
+import { Play, Bookmark, MoreHorizontal, BookOpen } from "lucide-react";
 import { useReaderSettings } from "@/context/ReaderSettingsContext";
 import { getAudioUrl } from "@/lib/api";
 import { useState, useRef } from "react";
@@ -11,7 +11,6 @@ interface AyahCardProps {
     juz: number;
     arabic: string;
     translation_en: string;
-    translation_bn: string;
     surahNumber: number;
   };
 }
@@ -36,43 +35,41 @@ export default function AyahCard({ ayah }: AyahCardProps) {
   };
 
   return (
-    <div className="group relative bg-bg-content/40 hover:bg-bg-content/60 border border-border-subtle hover:border-primary-green/30 rounded-2xl transition-all duration-300 flex min-h-[180px] overflow-hidden shadow-sm">
+    <div id={`ayah-${ayah.number}`} className="group flex border-b border-white/5 py-12 transition-colors">
       {/* Left Action Bar */}
-      <div className="w-16 bg-bg-sidebar/40 border-r border-border-subtle flex flex-col items-center py-6 gap-5">
-        <div className="text-[10px] font-mono font-bold text-primary-gold bg-primary-gold/10 px-2 py-1 rounded">
-          {ayah.juz}:{ayah.number}
+      <div className="w-24 flex flex-col items-center">
+        <div className="text-[16px] font-bold text-[#428038] mb-8">
+          {ayah.surahNumber}:{ayah.number}
         </div>
-        
-        <div className="flex flex-col gap-3 mt-2">
-          <button 
+
+        <div className="flex flex-col gap-6">
+          <button
             onClick={handlePlay}
-            className={`p-2 rounded-lg transition-all ${isPlaying ? "text-primary-green bg-primary-green/20 scale-110" : "text-text-secondary hover:text-primary-green hover:bg-primary-green/10"}`} 
+            className={`transition-all hover:scale-110 ${isPlaying ? "text-[#428038]" : "text-text-secondary/30 hover:text-white"}`}
             title={isPlaying ? "Pause" : "Play"}
           >
-            <Play size={18} fill={isPlaying ? "currentColor" : "none"} strokeWidth={isPlaying ? 0 : 2} />
+            <Play size={20} fill={isPlaying ? "currentColor" : "none"} strokeWidth={1} />
           </button>
-          <button className="p-2 text-text-secondary hover:text-primary-green hover:bg-primary-green/10 rounded-lg transition-all" title="Tafsir">
-            <BookOpen size={18} />
+          <button className="text-text-secondary/30 hover:text-white transition-all hover:scale-110" title="Reading Mode">
+            <BookOpen size={20} strokeWidth={1} />
           </button>
-          <button className="p-2 text-text-secondary hover:text-primary-green hover:bg-primary-green/10 rounded-lg transition-all" title="Bookmark">
-            <Bookmark size={18} />
+          <button className="text-text-secondary/30 hover:text-white transition-all hover:scale-110" title="Bookmark">
+            <Bookmark size={20} strokeWidth={1} />
           </button>
-          <button className="p-2 text-text-secondary hover:text-primary-green hover:bg-primary-green/10 rounded-lg transition-all" title="Share">
-            <Share2 size={18} />
-          </button>
-          <button className="p-2 text-text-secondary hover:text-primary-green hover:bg-primary-green/10 rounded-lg transition-all" title="More">
-            <MoreHorizontal size={18} />
+          <button className="text-text-secondary/30 hover:text-white transition-all hover:scale-110" title="More">
+            <MoreHorizontal size={20} strokeWidth={1} />
           </button>
         </div>
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 p-8 flex flex-col justify-between">
-        <div className="w-full mb-8">
-          <p 
-            className="leading-[2] text-text-primary text-right dir-rtl drop-shadow-sm group-hover:text-primary-gold/90 transition-colors duration-500"
-            style={{ 
-              direction: 'rtl', 
+      <div className="flex-1 pr-4">
+        {/* Arabic Text Section */}
+        <div className="w-full flex justify-end mb-10">
+          <p
+            className="text-right leading-[2.4] text-white/95 selection:bg-[#428038]/30 font-medium"
+            style={{
+              direction: 'rtl',
               fontSize: `${arabicFontSize}px`,
               fontFamily: arabicFont === "Amiri" ? "var(--font-amiri)" : "serif"
             }}
@@ -82,28 +79,17 @@ export default function AyahCard({ ayah }: AyahCardProps) {
           </p>
         </div>
 
-        <div className="space-y-4">
+        {/* Translation Section */}
+        <div className="space-y-8">
           {/* English Translation */}
-          <div className="border-l-2 border-primary-green/20 pl-4">
-            <span className="text-[10px] text-primary-green/40 font-bold uppercase tracking-widest block mb-1">English</span>
-            <p 
-              className="text-text-secondary leading-relaxed font-light group-hover:text-text-primary transition-colors duration-500 max-w-3xl"
+          <div className="max-w-4xl">
+            <span className="text-[10px] text-text-secondary/40 font-bold uppercase tracking-[0.15em] block mb-3">SAHEEH INTERNATIONAL</span>
+            <p
+              className="text-white/90 leading-relaxed font-normal"
               style={{ fontSize: `${translationFontSize}px` }}
               suppressHydrationWarning
             >
               {ayah.translation_en}
-            </p>
-          </div>
-
-          {/* Bangla Translation */}
-          <div className="border-l-2 border-primary-gold/20 pl-4">
-            <span className="text-[10px] text-primary-gold/40 font-bold uppercase tracking-widest block mb-1">Bangla</span>
-            <p 
-              className="text-text-secondary leading-relaxed font-light group-hover:text-text-primary transition-colors duration-500 max-w-3xl"
-              style={{ fontSize: `${translationFontSize}px` }}
-              suppressHydrationWarning
-            >
-              {ayah.translation_bn}
             </p>
           </div>
         </div>

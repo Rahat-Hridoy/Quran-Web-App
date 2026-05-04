@@ -29,6 +29,11 @@ export class SeedService implements OnApplicationBootstrap {
       return;
     }
 
+    console.log('Clearing existing data (if any)...');
+    await this.translationRepository.clear();
+    await this.ayahRepository.clear();
+    await this.surahRepository.clear();
+
     const enPath = path.join(__dirname, '..', 'data', 'quran_en.json');
     const bnPath = path.join(__dirname, '..', 'data', 'quran_bn.json');
 
@@ -47,6 +52,7 @@ export class SeedService implements OnApplicationBootstrap {
         name_english: s.transliteration,
         total_ayahs: s.total_verses,
         revelation_place: s.type,
+        name_translation: s.translation,
       });
 
       const savedSurah = await this.surahRepository.save(surah);

@@ -7,6 +7,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 
 export default function ContentSidebar() {
   const [activeTab, setActiveTab] = useState<"surah" | "juz" | "page">("surah");
+  const [ayahs, setAyahs] = useState<any[]>([]);
   const [surahs, setSurahs] = useState<Surah[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,9 +30,18 @@ export default function ContentSidebar() {
     getSurahs();
   }, []);
 
+
+
   const handleSurahClick = (id: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("surah", id.toString());
+    params.delete("ayah"); // Reset ayah when surah changes
+    router.push(`/read?${params.toString()}`);
+  };
+
+  const handleAyahClick = (ayahNumber: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("ayah", ayahNumber.toString());
     router.push(`/read?${params.toString()}`);
   };
 
@@ -39,18 +49,22 @@ export default function ContentSidebar() {
     s.name_english.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const filteredAyahs = ayahs.filter(a =>
+    a.ayah_number.toString().includes(searchQuery)
+  );
+
   return (
-    <div className="w-[340px] h-full bg-bg-sidebar border-r border-white/5 flex flex-col">
+    <div className="w-[300px] h-full bg-bg-sidebar border-r border-white/5 flex flex-col">
       {/* Tab Switcher */}
       <div className="p-6 pb-0">
-        <div className="bg-[#1a1a1a] p-1 rounded-full flex gap-1 border border-white/5">
+        <div className="bg-[#171717] p-1 rounded-full flex gap-1 border border-white/5">
           {(["surah", "juz", "page"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2 text-[13px] font-medium capitalize rounded-full transition-all duration-300 ${activeTab === tab
-                  ? "bg-[#000000] text-white shadow-sm"
-                  : "text-text-secondary hover:text-white"
+              className={`flex-1 py-2 text-sm font-medium capitalize rounded-full transition-all duration-300 hover:cursor-pointer ${activeTab === tab
+                ? "bg-bg-main text-white text-sm shadow-sm"
+                : "text-white/60 hover:text-white"
                 }`}
             >
               {tab}
@@ -66,7 +80,7 @@ export default function ContentSidebar() {
             placeholder={`Search ${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#1a1a1a] border border-white/5 rounded-full py-3.5 pl-12 pr-4 text-[14px] focus:outline-none focus:border-primary-green/50 transition-all placeholder:text-text-secondary/30"
+            className="w-full bg-[#1a1a1a] border border-white/5 rounded-full py-3.5 pl-12 pr-4 text-[14px] focus:outline-none focus:border-primary-green/50 transition-all placeholder:text-text-secondary/30 h-10"
           />
         </div>
       </div>
@@ -80,34 +94,39 @@ export default function ContentSidebar() {
           </div>
         ) : (
           <div className="space-y-3">
-            {filteredSurahs.map((surah) => (
-              <button
+            {activeTab === "surah" && filteredSurahs.map((surah) => (
+              <div
                 key={surah.id}
                 onClick={() => handleSurahClick(surah.id)}
-                className={`w-full group flex items-center gap-5 p-4 rounded-2xl transition-all border ${activeSurahId === surah.id.toString()
-                    ? "bg-[#1a1a1a] border-primary-green/40 shadow-lg shadow-primary-green/5"
-                    : "bg-[#0f0f0f] border-white/5 hover:bg-[#1a1a1a] hover:border-white/10"
+                role="button"
+                className={`group/card flex w-full min-w-[200px] cursor-pointer select-none items-center justify-start gap-4 px-4 py-3 rounded-xl transition-all duration-300 border ${activeSurahId === surah.id.toString()
+                  ? "bg-primary-green/10 border-primary-green/20 shadow-lg"
+                  : "bg-transparent border-white/10 hover:bg-white/5 hover:border-white/20"
                   }`}
               >
-                {/* Diamond Badge */}
-                <div className="relative flex-shrink-0 w-10 h-10 flex items-center justify-center">
-                  <div className={`absolute inset-0 rotate-45 rounded-lg transition-colors ${activeSurahId === surah.id.toString() ? "bg-primary-green" : "bg-[#1a1a1a]"
+                {/* Number Badge (Diamond Shape) */}
+                <div className="relative flex-shrink-0 w-9 h-9 flex items-center justify-center py-3">
+                  <div className={`absolute inset-0 rotate-45 rounded-lg transition-all duration-300 ${activeSurahId === surah.id.toString()
+                    ? "bg-primary-green shadow-md shadow-primary-green/20"
+                    : "bg-[#1a1a1a] group-hover/card:bg-primary-green/10"
                     }`} />
-                  <span className={`relative text-xs font-bold ${activeSurahId === surah.id.toString() ? "text-white" : "text-text-secondary group-hover:text-primary-green"}`}>
+                  <span className={`relative text-[13px] font-bold transition-colors ${activeSurahId === surah.id.toString() ? "text-white" : "text-text-secondary group-hover/card:text-primary-green"}`}>
                     {surah.number}
                   </span>
                 </div>
 
                 <div className="flex-1 min-w-0 text-left">
-                  <h4 className={`text-[15px] font-bold transition-colors truncate ${activeSurahId === surah.id.toString() ? "text-white" : "text-text-primary group-hover:text-primary-green"}`}>
+                  <h4 className={`text-[15px] font-bold transition-colors truncate ${activeSurahId === surah.id.toString() ? "text-white" : "text-text-primary group-hover/card:text-primary-green"}`}>
                     {surah.name_english}
                   </h4>
-                  <p className="text-[12px] text-text-secondary/60 transition-colors mt-0.5 truncate capitalize">
-                    {surah.revelation_place}
+                  <p className="text-[12px] text-text-secondary/50 transition-colors mt-0.5 truncate capitalize font-medium">
+                    {surah.name_translation}
                   </p>
                 </div>
-              </button>
+              </div>
             ))}
+
+
           </div>
         )}
       </div>

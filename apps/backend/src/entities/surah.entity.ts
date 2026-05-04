@@ -22,6 +22,9 @@ export class Surah {
   @Column()
   revelation_place!: string;
 
+  @Column({ nullable: true })
+  name_translation?: string;
+
   @OneToMany(() => Ayah, (ayah) => ayah.surah)
   ayahs!: Ayah[];
 }

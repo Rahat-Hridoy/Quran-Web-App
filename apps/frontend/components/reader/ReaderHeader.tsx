@@ -36,7 +36,7 @@ export default function ReaderHeader() {
   }, [surahId]);
 
   return (
-    <header className="h-[59px] border-b border-white/5 flex items-center justify-between px-6 bg-[#101010] sticky top-0 z-50">
+    <header className="h-[59px] border-b border-white/5 flex items-center justify-between px-6 bg-bg-main sticky top-0 z-50">
       {/* Left: Branding */}
       <div className="flex flex-col">
         <h1 className="text-xl font-bold text-white tracking-tight leading-tight">

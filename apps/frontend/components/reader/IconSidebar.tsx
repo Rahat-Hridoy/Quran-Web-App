@@ -18,14 +18,14 @@ export default function IconSidebar() {
   return (
     <aside className="w-16 bg-[#171717] border-r border-white/5 flex flex-col items-center z-50 h-full relative">
       {/* Logo - Top */}
-      <div className="h-[72px] flex items-center justify-center border-b border-white/5">
+      <div className="h-[72px] flex items-center justify-center">
         <Link href="/" className="group relative">
           <div className="w-10 h-10 rounded-lg flex items-center justify-center shadow-[0_0_20px_rgba(46,125,50,0.3)] group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(46,125,50,0.5)] transition-all duration-500">
-            <Image 
-              src="/icons/logo.svg" 
-              alt="Quran Web App" 
-              width={36} 
-              height={36} 
+            <Image
+              src="/icons/logo.svg"
+              alt="Quran Web App"
+              width={36}
+              height={36}
               className="drop-shadow-sm"
             />
           </div>

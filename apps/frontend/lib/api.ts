@@ -16,6 +16,8 @@ export interface Surah {
   name_arabic: string;
   revelation_place: string;
   total_ayahs: number;
+  name_translation?: string;
+  transliteration?: string;
 }
 
 export interface Ayah {
