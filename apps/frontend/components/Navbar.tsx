@@ -20,12 +20,12 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="bg-primary-green p-2 rounded-lg">
-              <BookOpen className="w-6 h-6 text-white" />
+            <div className="p-0">
+              <img src="/icons/logo.svg" alt="Quran Mazid" className="w-10 h-10" />
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-bold font-serif leading-tight">Quran Mazid</span>
-              <span className="text-[10px] text-gray-400 uppercase tracking-widest">Read, Study, and Learn</span>
+              <span className="text-xl font-bold font-banner leading-tight">Quran Mazid</span>
+              <span className="text-[10px] text-gray-400 uppercase tracking-widest">Read, Study, and Learn The Quran</span>
             </div>
           </div>
 
@@ -50,15 +50,17 @@ const Navbar = () => {
 
           {/* Right Actions */}
           <div className="hidden md:flex items-center gap-4">
-            <button className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-all">
-              <Sun className="w-5 h-5" />
+            <button className="p-2.5 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all">
+              <div className="w-5 h-5 rounded-full border-2 border-primary-green relative flex items-center justify-center overflow-hidden">
+                <div className="absolute top-0 left-0 w-1/2 h-full bg-primary-green"></div>
+              </div>
             </button>
-            <button className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-all">
+            <button className="p-2.5 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all">
               <Settings className="w-5 h-5" />
             </button>
-            <button className="flex items-center gap-2 bg-primary-green hover:bg-green-700 text-white px-5 py-2.5 rounded-full text-sm font-semibold transition-all transform hover:scale-105 shadow-lg shadow-green-900/20">
+            <button className="flex items-center gap-2 bg-[#428038] hover:bg-green-700 text-white px-6 py-2.5 rounded-full text-sm font-semibold transition-all shadow-lg shadow-green-900/20 group">
               <span>Support Us</span>
-              <Heart className="w-4 h-4 fill-white" />
+              <Heart className="w-4 h-4 fill-white group-hover:scale-110 transition-transform" />
             </button>
           </div>
 

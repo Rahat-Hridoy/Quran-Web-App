@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Cinzel, Amiri } from "next/font/google";
+import { Inter, Cinzel, Amiri, Cinzel_Decorative } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -10,6 +10,12 @@ const inter = Inter({
 const cinzel = Cinzel({
   subsets: ["latin"],
   variable: "--font-cinzel",
+});
+
+const cinzelDecorative = Cinzel_Decorative({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-cinzel-decorative",
 });
 
 const amiri = Amiri({
@@ -33,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${cinzel.variable} ${amiri.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${cinzel.variable} ${cinzelDecorative.variable} ${amiri.variable} font-sans antialiased`}>
         <ReaderSettingsProvider>
           <AudioPlayerProvider>
             {children}
