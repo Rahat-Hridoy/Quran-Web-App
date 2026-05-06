@@ -7,12 +7,11 @@ WORKDIR /app
 COPY pnpm-lock.yaml ./
 COPY pnpm-workspace.yaml ./
 COPY package.json ./
-COPY apps/backend/package.json ./apps/backend/
+COPY apps/backend/package.json ./apps/backend/package.json
 
-RUN pnpm install
+RUN pnpm install --frozen-lockfile=false
 
 COPY apps/backend ./apps/backend
-COPY packages ./packages
 
 RUN pnpm --filter backend build
 
