@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-WORKDIR /apps
+WORKDIR apps
 
 # install pnpm
 RUN npm install -g pnpm
@@ -15,7 +15,7 @@ COPY apps/backend ./apps/backend
 RUN pnpm install
 
 # go to backend
-WORKDIR /apps/backend
+WORKDIR apps/backend
 
 # build
 RUN pnpm build
