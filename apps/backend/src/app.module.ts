@@ -18,7 +18,7 @@ import { QuranModule } from './quran/quran.module';
       ttl: 3600, // 1 hour
     }),
     TypeOrmModule.forRoot({
-      type: 'sqlite',
+      type: 'better-sqlite3',
       database: process.env.DATABASE_NAME || 'data/quran.db',
       entities: [Surah, Ayah, Translation],
       synchronize: true, // Only for development!
