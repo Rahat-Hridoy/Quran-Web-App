@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn src/main.ts",
-    "build": "rimraf dist && tsc && mkdir -p dist/data && cp -r src/data/* dist/data/",
+    "build": "rimraf dist && tsc && mkdir -p dist/data && cp -r src/data/* dist/data/ && mkdir -p data",
     "start": "node dist/main.js",
     "lint": "eslint . --max-warnings 0",
     "seed": "ts-node src/seed.ts"

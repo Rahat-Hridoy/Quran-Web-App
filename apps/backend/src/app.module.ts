@@ -19,7 +19,7 @@ import { QuranModule } from './quran/quran.module';
     }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: process.env.DATABASE_NAME || 'quran.db',
+      database: process.env.DATABASE_NAME || 'data/quran.db',
       entities: [Surah, Ayah, Translation],
       synchronize: true, // Only for development!
     }),
@@ -27,4 +27,4 @@ import { QuranModule } from './quran/quran.module';
     QuranModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }
